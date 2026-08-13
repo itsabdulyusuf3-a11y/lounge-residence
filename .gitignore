@@ -1,0 +1,8 @@
+# Python placeholder generator (not needed on the live site)
+generate_placeholders.py
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
