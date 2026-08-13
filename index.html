@@ -12,6 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <style>
 :root{--ink:#171310;--ink2:#241c16;--gold:#c2953c;--gold2:#a87e2a;--sun:#e0a437;--cream:#f6f1e7;--paper:#fbf8f2;--line:#e5dccb;--muted:#6f6659}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -578,23 +580,85 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
 <script>
 /* ============ CONFIGURATION ============ */
 const CONFIG = {
-  whatsapp: "2348000000000",       // Update with actual front desk number
-  paystackPublicKey: "",           // Drop live Paystack PK here (e.g. pk_live_...)
-  rates: {
-    three:{label:"Three-Bedroom Residence", price:250000},
-    two:{label:"Two-Bedroom Residence",     price:200000},
-    one:{label:"One-Bedroom Residence",     price:180000},
-    studiod:{label:"Studio Deluxe",         price:150000},
-    studio:{label:"Studio Classic",         price:120000},
-    lounge:{label:"The Lounge (event)",     price:250000}
-  },
+  whatsapp: SUPABASE_CONFIG.whatsapp,
+  paystackPublicKey: SUPABASE_CONFIG.paystackPublicKey,
+  rates: SUPABASE_CONFIG.rates,
   fee: 0
 };
+
+// Supabase client
+const supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(n);
 $("#year").textContent=new Date().getFullYear();
 $$("[data-price]").forEach(el=>el.textContent=fmt(CONFIG.rates[el.dataset.price].price));
+
+// Load availability from Supabase and mark unavailable rooms
+let unavailableRooms = [];
+let roomList = [];
+async function loadAvailability() {
+  try {
+    const { data: roomData } = await supabase.from("rooms").select("id, category");
+    const { data: unavailData } = await supabase.from("unavailability").select("*");
+    roomList = roomData || [];
+    unavailableRooms = unavailData || [];
+    const today = new Date().toISOString().split("T")[0];
+    // Build map of room_id -> category
+    const catByRoom = {};
+    roomList.forEach(r => { if (r.category) catByRoom[r.id] = r.category; });
+    // Determine blocked categories for today
+    const blockedCats = new Set();
+    unavailableRooms.forEach(u => {
+      const cat = catByRoom[u.room_id];
+      if (cat && u.start_date <= today && u.end_date >= today) blockedCats.add(cat);
+    });
+    // Mark unavailable room cards
+    $$(".room").forEach(room => {
+      const btn = room.querySelector(".bookBtn");
+      if (!btn) return;
+      const cat = btn.dataset.cat;
+      const blocked = blockedCats.has(cat);
+      if (blocked) {
+        room.style.opacity = "0.55";
+        room.style.pointerEvents = "none";
+        const rate = room.querySelector(".rate");
+        if (rate) rate.innerHTML = '<span style="background:var(--red);color:#fff;padding:9px 15px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase">Unavailable</span>';
+        btn.textContent = "Currently Unavailable";
+        btn.style.pointerEvents = "none";
+      }
+    });
+  } catch (e) {
+    console.warn("Could not load availability:", e.message);
+  }
+}
+
+function roomCategoryForCode(code) {
+  if (!code) return null;
+  if (code === "LOUNGE") return "lounge";
+  if (code.startsWith("SD")) return "studiod";
+  if (code.startsWith("S")) return "studio";
+  if (code === "12") return "three";
+  if (["01","02","09","10","11"].includes(code)) return "two";
+  return "one";
+}
+
+// Save booking request to Supabase
+async function saveBookingRequest() {
+  const { cat, n } = collect();
+  const { data, error } = await supabase.from("bookings").insert({
+    category: $("#bCat").value,
+    guest_name: $("#bName").value.trim(),
+    guest_email: $("#bEmail").value.trim() || null,
+    guest_phone: $("#bPhone").value.trim(),
+    check_in: $("#bIn").value,
+    check_out: $("#bOut").value,
+    guests: +$("#bGuests").value || 1,
+    total_amount: $("#bCat").value === "lounge" ? cat.price : cat.price * n,
+    status: "pending"
+  });
+  return { data, error };
+}
 
 addEventListener("scroll",()=>$("#nav").classList.toggle("scrolled",scrollY>40));
 
@@ -680,9 +744,12 @@ function waMsg(){
   return encodeURIComponent(`Hello The Lounge Residence! I would like to reserve:%0A👤 Name: ${$("#bName").value}%0A🏠 Residence: ${cat.label}%0A📅 Check-in: ${$("#bIn").value}%0A📅 Check-out: ${$("#bOut").value}%0A👥 Guests: ${$("#bGuests").value}%0A💰 Quoted Total: ${$("#sumTotal").textContent}%0A📞 Phone: ${$("#bPhone").value}`);
 }
 
-$("#waBtn").onclick=()=>{
+$("#waBtn").onclick=async()=>{
   const err=validate(false);
   if(err) return note("⚠ "+err);
+  // Save to Supabase so admin sees the request
+  const { error } = await saveBookingRequest();
+  if (!error) console.log("Booking request saved to database");
   window.open(`https://wa.me/${CONFIG.whatsapp}?text=${waMsg()}`,"_blank");
   note("✓ Request sent! Our concierge will confirm availability on WhatsApp within minutes.");
 };
@@ -730,6 +797,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if($("#hOut")) $("#hOut").min = tomorrowStr;
   if($("#bOut")) $("#bOut").min = tomorrowStr;
   quote();
+  loadAvailability();
+  // Refresh availability every 60 seconds and on realtime changes
+  supabase
+    .channel("public:unavailability")
+    .on("postgres_changes", { event: "*", schema: "public", table: "unavailability" }, () => loadAvailability())
+    .subscribe();
 });
 </script>
 </body>

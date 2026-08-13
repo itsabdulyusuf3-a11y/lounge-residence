@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — The Lounge Residence</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='30' fill='%23171310'/><circle cx='32' cy='32' r='25' fill='none' stroke='%23c2953c' stroke-width='2'/><text x='32' y='41' font-family='Georgia' font-size='22' fill='%23c2953c' text-anchor='middle'>LR</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--ink:#171310;--ink2:#241c16;--gold:#c2953c;--gold2:#a87e2a;--sun:#e0a437;--cream:#f6f1e7;--paper:#fbf8f2;--line:#e5dccb;--muted:#6f6659;--green:#1faf5f;--red:#c0392b;--blue:#2c6fbb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Jost',sans-serif;background:var(--paper);color:var(--ink);font-weight:300}
+h1,h2,h3{font-family:'Playfair Display',serif;font-weight:600}
+a{text-decoration:none;color:inherit}
+/* LOGIN */
+#loginScreen{min-height:100vh;display:grid;place-items:center;background:linear-gradient(rgba(16,11,8,.8),rgba(16,11,8,.92)),url('assets/bedroom-2.jpg') center/cover}
+.login-box{background:var(--paper);padding:44px;width:min(420px,92%);box-shadow:0 30px 80px rgba(0,0,0,.4);border-top:4px solid var(--gold)}
+.login-box h1{text-align:center;margin-bottom:8px}
+.login-box .sub{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:28px}
+.login-box label{display:block;font-size:.65rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold2);margin:14px 0 6px}
+.login-box input{width:100%;padding:13px 14px;border:1px solid var(--line);font:400 .95rem 'Jost';outline:none;background:#fff}
+.login-box input:focus{border-color:var(--gold)}
+.btn{background:linear-gradient(120deg,var(--gold),var(--sun));color:var(--ink);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:.78rem;padding:14px 24px;border:none;cursor:pointer;width:100%;margin-top:20px;transition:.25s}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1px var(--gold);color:var(--gold)}
+#loginMsg{margin-top:14px;font-size:.85rem;text-align:center;color:var(--red);min-height:20px}
+/* DASHBOARD */
+#app{display:none}
+.topbar{background:var(--ink);color:var(--cream);padding:14px 0;position:sticky;top:0;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.topbar .wrap{width:min(1240px,94%);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.topbar .brand{display:flex;align-items:center;gap:12px}
+.mono{width:40px;height:40px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:'Playfair Display',serif;color:var(--gold);font-size:.95rem}
+.topbar b{font-family:'Playfair Display',serif;letter-spacing:.14em}
+.topbar small{color:var(--gold);letter-spacing:.3em;text-transform:uppercase;font-size:.55rem;display:block}
+.topbar .user{display:flex;align-items:center;gap:14px;font-size:.85rem}
+.stats{background:var(--cream);border-bottom:1px solid var(--line);padding:18px 0}
+.stats .wrap{width:min(1240px,94%);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{background:#fff;border:1px solid var(--line);padding:16px 20px}
+.stat b{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gold2);display:block}
+.stat span{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+main{width:min(1240px,94%);margin:0 auto;padding:32px 0 60px}
+.tabbar{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.tab{padding:11px 22px;border:1px solid var(--line);background:#fff;cursor:pointer;font:500 .8rem 'Jost';letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:.2s}
+.tab.active{background:var(--ink);color:var(--sun);border-color:var(--ink)}
+.tab:hover:not(.active){border-color:var(--gold)}
+.view{display:none}
+.view.show{display:block}
+/* ROOMS TABLE */
+.tbl-wrap{background:#fff;border:1px solid var(--line);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--cream);font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold2);text-align:left;padding:14px 16px;white-space:nowrap}
+td{padding:12px 16px;border-top:1px solid var(--line);white-space:nowrap}
+.avail{display:inline-block;padding:4px 12px;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;font-weight:500;border-radius:20px}
+.avail.ok{background:rgba(31,175,95,.12);color:var(--green)}
+.avail.no{background:rgba(192,57,43,.1);color:var(--red)}
+.avail.wait{background:rgba(194,149,60,.12);color:var(--gold2)}
+.toggle{background:none;border:1px solid var(--gold);color:var(--gold2);padding:7px 14px;cursor:pointer;font:500 .7rem 'Jost';letter-spacing:.1em;text-transform:uppercase;transition:.2s}
+.toggle:hover{background:var(--gold);color:var(--ink)}
+.toggle.unblock{color:var(--green);border-color:var(--green)}
+.toggle.unblock:hover{background:var(--green);color:#fff}
+/* BOOKING REQUESTS */
+.req{border:1px solid var(--line);background:#fff;padding:22px 26px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.req .info{flex:1;min-width:260px}
+.req h3{font-size:1.05rem;margin-bottom:6px}
+.req .meta{color:var(--muted);font-size:.85rem}
+.req .meta b{color:var(--ink);font-weight:500}
+.req .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.68rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+.badge.pending{background:rgba(194,149,60,.15);color:var(--gold2)}
+.badge.confirmed{background:rgba(31,175,95,.12);color:var(--green)}
+.badge.declined{background:rgba(192,57,43,.1);color:var(--red)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.mini{background:none;border:1px solid var(--line);padding:9px 16px;cursor:pointer;font:500 .7rem 'Jost';letter-spacing:.1em;text-transform:uppercase;transition:.2s}
+.mini.confirm{border-color:var(--green);color:var(--green)}.mini.confirm:hover{background:var(--green);color:#fff}
+.mini.decline{border-color:var(--red);color:var(--red)}.mini.decline:hover{background:var(--red);color:#fff}
+.mini.done{border-color:var(--line);color:var(--muted)}.mini.done:hover{background:var(--ink);color:var(--cream)}
+/* BOOK FORM (manual entry) */
+.addcard{background:var(--ink);color:var(--cream);padding:26px;border:1px solid rgba(194,149,60,.4);margin-bottom:26px}
+.addcard h3{color:var(--sun);margin-bottom:16px}
+.addcard .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.addcard label{display:block;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#b9ae9d;margin-bottom:5px}
+.addcard input,.addcard select{padding:11px 12px;border:1px solid rgba(194,149,60,.4);background:rgba(255,255,255,.06);color:var(--cream);font:400 .9rem 'Jost';outline:none;width:100%}
+.addcard input:focus,.addcard select:focus{border-color:var(--gold)}
+.addcard .btn{margin-top:16px}
+/* NOTICE */
+.notice{position:fixed;bottom:24px;right:24px;z-index:99;background:var(--ink);color:var(--cream);border:1px solid var(--gold);padding:14px 22px;font-size:.88rem;transition:.3s;opacity:0;pointer-events:none;max-width:340px}
+.notice.show{opacity:1}
+.notice.good{border-color:var(--green)}
+@media(max-width:760px){.stats .wrap{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="mono" style="margin:0 auto 14px;width:52px;height:52px;font-size:1.1rem">LR</div>
+    <h1>Staff Portal</h1>
+    <p class="sub">The Lounge Residence · Sultan Road, Kano</p>
+    <label>Email</label>
+    <input type="email" id="loginEmail" placeholder="staff@loungeresidence.ng">
+    <label>Password</label>
+    <input type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" onclick="doLogin()">Sign In</button>
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="app">
+  <div class="topbar">
+    <div class="wrap">
+      <div class="brand"><span class="mono">LR</span><span><b>THE LOUNGE</b><small>Admin Panel</small></span></div>
+      <div class="user"><span id="userEmail">—</span><button class="mini done" onclick="doLogout()">Log Out</button></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="wrap">
+      <div class="stat"><b id="statRooms">—</b><span>Total Residences</span></div>
+      <div class="stat"><b id="statAvail">—</b><span>Currently Available</span></div>
+      <div class="stat"><b id="statPending">—</b><span>Pending Requests</span></div>
+      <div class="stat"><b id="statConfirmed">—</b><span>Confirmed Bookings</span></div>
+    </div>
+  </div>
+
+  <main>
+    <div class="tabbar">
+      <button class="tab active" data-tab="rooms" onclick="showTab('rooms')">Rooms & Availability</button>
+      <button class="tab" data-tab="bookings" onclick="showTab('bookings')">Booking Requests</button>
+      <button class="tab" data-tab="add" onclick="showTab('add')">Add Booking</button>
+    </div>
+
+    <!-- ROOMS VIEW -->
+    <div class="view show" id="view-rooms">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Room</th><th>Floor</th><th>Type</th><th>Rates/Night</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="roomsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BOOKINGS VIEW -->
+    <div class="view" id="view-bookings">
+      <div id="bookingsList"></div>
+    </div>
+
+    <!-- ADD BOOKING VIEW -->
+    <div class="view" id="view-add">
+      <div class="addcard">
+        <h3>Record a Booking Manually</h3>
+        <div class="row">
+          <div><label>Room</label><select id="addRoom"></select></div>
+          <div><label>Guest Name</label><input id="addName" placeholder="Full name"></div>
+          <div><label>Phone</label><input id="addPhone" placeholder="+234..."></div>
+          <div><label>Email (optional)</label><input id="addEmail" type="email" placeholder="email@example.com"></div>
+          <div><label>Check-in</label><input type="date" id="addIn"></div>
+          <div><label>Check-out</label><input type="date" id="addOut"></div>
+          <div><label>Guests</label><input type="number" id="addGuests" value="2" min="1" max="8"></div>
+        </div>
+        <button class="btn" onclick="addManualBooking()" style="width:auto">Save Booking</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="notice" id="notice"></div>
+
+<script>
+const SUPABASE_URL = "https://bhsghtwqreniqjktyyji.supabase.co";
+const SUPABASE_KEY = "sb_publishable_gA3wYlZBdvlwIs3VJN8fKg_Px7KD6y3";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const today = () => new Date().toISOString().split("T")[0];
+const fmt = n => new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
+
+function toast(msg, good = false) {
+  const n = $("#notice");
+  n.textContent = msg;
+  n.className = "notice show" + (good ? " good" : "");
+  clearTimeout(n._t);
+  n._t = setTimeout(() => n.classList.remove("show"), 3200);
+}
+
+/* ===== AUTH ===== */
+async function doLogin() {
+  const email = $("#loginEmail").value.trim();
+  const pass = $("#loginPassword").value;
+  if (!email || !pass) return $("#loginMsg").textContent = "Enter your email and password.";
+  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+  if (error) return $("#loginMsg").textContent = error.message;
+  enterApp();
+}
+
+async function doLogout() {
+  await supabase.auth.signOut();
+  $("#loginScreen").style.display = "grid";
+  $("#app").style.display = "none";
+  $("#loginPassword").value = "";
+}
+
+async function enterApp() {
+  $("#loginScreen").style.display = "none";
+  $("#app").style.display = "block";
+  const { data: { user } } = await supabase.auth.getUser();
+  $("#userEmail").textContent = user ? user.email : "—";
+  showTab("rooms");
+  refreshAll();
+}
+
+supabase.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_IN") enterApp();
+  if (event === "SIGNED_OUT") { $("#loginScreen").style.display = "grid"; $("#app").style.display = "none"; }
+});
+
+// Check if already logged in
+supabase.auth.getSession().then(({ data }) => { if (data.session) enterApp(); });
+
+/* ===== TABS ===== */
+function showTab(tab) {
+  $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+  $$(".view").forEach(v => v.classList.remove("show"));
+  $("#view-" + tab).classList.add("show");
+}
+
+/* ===== DATA ===== */
+let rooms = [], unavail = [], bookings = [];
+
+async function refreshAll() {
+  await Promise.all([loadRooms(), loadUnavail(), loadBookings()]);
+  renderRooms();
+  renderStats();
+  renderBookings();
+  fillAddRoom();
+}
+
+async function loadRooms() {
+  const { data, error } = await supabase.from("rooms").select("*").order("id");
+  if (error) { console.error(error); return; }
+  rooms = data || [];
+}
+
+async function loadUnavail() {
+  const { data, error } = await supabase.from("unavailability").select("*").order("start_date");
+  if (error) { console.error(error); return; }
+  unavail = data || [];
+}
+
+async function loadBookings() {
+  const { data, error } = await supabase.from("bookings").select("*").order("created_at", { ascending: false });
+  if (error) { console.error(error); return; }
+  bookings = data || [];
+}
+
+function isRoomBlocked(roomId) {
+  const t = today();
+  return unavail.some(u => u.room_id === roomId && u.start_date <= t && u.end_date >= t);
+}
+
+function renderRooms() {
+  const body = $("#roomsBody");
+  if (!rooms.length) { body.innerHTML = '<tr><td colspan="6" style="padding:30px;text-align:center;color:var(--muted)">Run the SQL schema first — see supabase-schema.sql</td></tr>'; return; }
+  body.innerHTML = rooms.map(r => {
+    const blocked = isRoomBlocked(r.id);
+    return `<tr>
+      <td><b style="font-weight:600">${r.code}</b></td>
+      <td>${r.floor}</td>
+      <td>${r.name}</td>
+      <td>${fmt(r.base_price)}</td>
+      <td><span class="avail ${blocked ? 'no' : 'ok'}">${blocked ? 'Unavailable' : 'Available'}</span></td>
+      <td><button class="toggle ${blocked ? 'unblock' : ''}" onclick="toggleRoom(${r.id})">${blocked ? 'Mark Available' : 'Mark Unavailable'}</button></td>
+    </tr>`;
+  }).join("");
+}
+
+function renderStats() {
+  $("#statRooms").textContent = rooms.length;
+  $("#statAvail").textContent = rooms.filter(r => !isRoomBlocked(r.id)).length;
+  $("#statPending").textContent = bookings.filter(b => b.status === "pending").length;
+  $("#statConfirmed").textContent = bookings.filter(b => b.status === "confirmed").length;
+}
+
+function renderBookings() {
+  const list = $("#bookingsList");
+  if (!bookings.length) { list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px">No booking requests yet.</p>'; return; }
+  list.innerHTML = bookings.map(b => {
+    const badge = `<span class="badge ${b.status}">${b.status}</span>`;
+    const days = Math.max(1, Math.round((new Date(b.check_out) - new Date(b.check_in)) / 864e5));
+    const actions = b.status === "pending"
+      ? `<div class="actions">
+          <button class="mini confirm" onclick="setBookingStatus(${b.id}, 'confirmed')">✓ Confirm</button>
+          <button class="mini decline" onclick="setBookingStatus(${b.id}, 'declined')">✕ Decline</button>
+        </div>`
+      : b.status === "confirmed"
+        ? `<div class="actions"><button class="mini decline" onclick="setBookingStatus(${b.id}, 'cancelled')">Cancel</button></div>`
+        : `<span style="color:var(--muted);font-size:.78rem">${b.status.toUpperCase()}</span>`;
+    return `<div class="req">
+      <div class="info">
+        <h3>${b.guest_name} ${badge}</h3>
+        <div class="meta">
+          <b>${b.room_code || b.category}</b> · ${b.check_in} → ${b.check_out} (${days} night${days > 1 ? "s" : ""}) ·
+          ${b.guests} guest${b.guests > 1 ? "s" : ""} · ${fmt(b.total_amount)}<br>
+          📞 ${b.guest_phone}${b.guest_email ? " · ✉ " + b.guest_email : ""} · Submitted ${b.created_at ? new Date(b.created_at).toLocaleString() : "—"}
+        </div>
+      </div>
+      ${actions}
+    </div>`;
+  }).join("");
+}
+
+/* ===== ACTIONS ===== */
+async function toggleRoom(roomId) {
+  const r = rooms.find(x => x.id === roomId);
+  if (!r) return;
+  const blocked = isRoomBlocked(roomId);
+  
+  if (blocked) {
+    // Remove any unavailability covering today
+    const { error } = await supabase
+      .from("unavailability")
+      .delete()
+      .eq("room_id", roomId)
+      .lte("start_date", today())
+      .gte("end_date", today());
+    if (error) return toast("Error: " + error.message);
+    toast(`${r.code} marked AVAILABLE`, true);
+  } else {
+    // Ask admin for dates to block
+    const start = prompt(`Block ${r.code} from (YYYY-MM-DD):`, today());
+    if (!start) return;
+    const end = prompt("Until (YYYY-MM-DD):", start);
+    if (!end) return;
+    const { error } = await supabase.from("unavailability").insert({
+      room_id: roomId, start_date: start, end_date: end, reason: "admin"
+    });
+    if (error) return toast("Error: " + error.message);
+    toast(`${r.code} marked UNAVAILABLE (${start} → ${end})`, true);
+  }
+  await loadUnavail();
+  renderRooms();
+  renderStats();
+}
+
+async function setBookingStatus(id, status) {
+  const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
+  if (error) return toast("Error: " + error.message);
+  toast(`Booking #${id} ${status}.`, true);
+  
+  // Also unblock the room if confirmed (or re-block if cancelled)
+  const b = bookings.find(x => x.id === id);
+  if (b && b.room_id) {
+    if (status === "confirmed") {
+      await supabase.from("unavailability").insert({
+        room_id: b.room_id, start_date: b.check_in, end_date: b.check_out, reason: "booked"
+      });
+    } else if (status === "cancelled" || status === "declined") {
+      await supabase.from("unavailability")
+        .delete()
+        .eq("room_id", b.room_id)
+        .eq("start_date", b.check_in)
+        .eq("end_date", b.check_out);
+    }
+  }
+  await loadBookings();
+  await loadUnavail();
+  renderBookings();
+  renderRooms();
+  renderStats();
+}
+
+function fillAddRoom() {
+  const sel = $("#addRoom");
+  sel.innerHTML = rooms.map(r => `<option value="${r.id}" data-code="${r.code}" data-price="${r.base_price}">${r.code} — ${r.name} (${fmt(r.base_price)}/night)</option>`).join("");
+}
+
+async function addManualBooking() {
+  const roomId = +$("#addRoom").value;
+  const name = $("#addName").value.trim();
+  const phone = $("#addPhone").value.trim();
+  const checkIn = $("#addIn").value, checkOut = $("#addOut").value;
+  const guests = +$("#addGuests").value || 1;
+  const room = rooms.find(r => r.id === roomId);
+  if (!name || !phone || !checkIn || !checkOut) return toast("Fill in all required fields.");
+  if (checkOut <= checkIn) return toast("Check-out must be after check-in.");
+  const days = Math.round((new Date(checkOut) - new Date(checkIn)) / 864e5);
+  const total = room.base_price * days;
+  const { data, error } = await supabase.from("bookings").insert({
+    room_id: roomId, room_code: room.code, category: room.category,
+    guest_name: name, guest_phone: phone, guest_email: $("#addEmail").value.trim() || null,
+    check_in: checkIn, check_out: checkOut, guests, total_amount: total, status: "confirmed"
+  });
+  if (error) return toast("Error: " + error.message);
+  // Block room for those dates
+  await supabase.from("unavailability").insert({
+    room_id: roomId, start_date: checkIn, end_date: checkOut, reason: "booked"
+  });
+  toast(`Booking saved for ${name} — ${room.code} confirmed!`, true);
+  ["addName","addPhone","addEmail","addIn","addOut"].forEach(id => $(id).value = "");
+  await refreshAll();
+}
+
+// Listen for realtime changes
+supabase
+  .channel("public:bookings")
+  .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => refreshAll())
+  .subscribe();
+
+supabase
+  .channel("public:unavailability")
+  .on("postgres_changes", { event: "*", schema: "public", table: "unavailability" }, () => { loadUnavail().then(() => { renderRooms(); renderStats(); }); })
+  .subscribe();
+</script>
+</body>
+</html>
