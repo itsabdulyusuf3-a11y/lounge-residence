@@ -592,7 +592,33 @@ const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.ano
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(n);
 $("#year").textContent=new Date().getFullYear();
-$$("[data-price]").forEach(el=>el.textContent=fmt(CONFIG.rates[el.dataset.price].price));
+
+// Load live prices from Supabase rooms table
+async function loadPrices() {
+  try {
+    const { data, error } = await sb.from("rooms").select("category, base_price");
+    if (error) throw error;
+    const prices = {};
+    (data || []).forEach(r => {
+      if (!prices[r.category] && r.base_price) prices[r.category] = r.base_price;
+    });
+    // Update CONFIG rates with live prices
+    Object.keys(prices).forEach(cat => {
+      if (CONFIG.rates[cat]) CONFIG.rates[cat].price = prices[cat];
+    });
+    // Update all displayed prices
+    $$("[data-price]").forEach(el => {
+      const cat = el.dataset.price;
+      if (CONFIG.rates[cat]) el.textContent = fmt(CONFIG.rates[cat].price);
+    });
+  } catch (e) {
+    console.warn("Could not load live prices:", e.message);
+    // Fallback to config.js prices
+    $$("[data-price]").forEach(el => {
+      if (CONFIG.rates[el.dataset.price]) el.textContent = fmt(CONFIG.rates[el.dataset.price].price);
+    });
+  }
+}
 
 // Load availability from Supabase and mark unavailable rooms
 let unavailableRooms = [];
@@ -797,6 +823,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if($("#hOut")) $("#hOut").min = tomorrowStr;
   if($("#bOut")) $("#bOut").min = tomorrowStr;
   quote();
+  loadPrices();
   loadAvailability();
   // Refresh availability every 60 seconds and on realtime changes
   sb
