@@ -171,7 +171,7 @@ td{padding:12px 16px;border-top:1px solid var(--line);white-space:nowrap}
 <script>
 const SUPABASE_URL = "https://bhsghtwqreniqjktyyji.supabase.co";
 const SUPABASE_KEY = "sb_publishable_gA3wYlZBdvlwIs3VJN8fKg_Px7KD6y3";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -191,13 +191,13 @@ async function doLogin() {
   const email = $("#loginEmail").value.trim();
   const pass = $("#loginPassword").value;
   if (!email || !pass) return $("#loginMsg").textContent = "Enter your email and password.";
-  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
   if (error) return $("#loginMsg").textContent = error.message;
   enterApp();
 }
 
 async function doLogout() {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
   $("#loginScreen").style.display = "grid";
   $("#app").style.display = "none";
   $("#loginPassword").value = "";
@@ -206,19 +206,19 @@ async function doLogout() {
 async function enterApp() {
   $("#loginScreen").style.display = "none";
   $("#app").style.display = "block";
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await sb.auth.getUser();
   $("#userEmail").textContent = user ? user.email : "—";
   showTab("rooms");
   refreshAll();
 }
 
-supabase.auth.onAuthStateChange((event) => {
+sb.auth.onAuthStateChange((event) => {
   if (event === "SIGNED_IN") enterApp();
   if (event === "SIGNED_OUT") { $("#loginScreen").style.display = "grid"; $("#app").style.display = "none"; }
 });
 
 // Check if already logged in
-supabase.auth.getSession().then(({ data }) => { if (data.session) enterApp(); });
+sb.auth.getSession().then(({ data }) => { if (data.session) enterApp(); });
 
 /* ===== TABS ===== */
 function showTab(tab) {
@@ -239,19 +239,19 @@ async function refreshAll() {
 }
 
 async function loadRooms() {
-  const { data, error } = await supabase.from("rooms").select("*").order("id");
+  const { data, error } = await sb.from("rooms").select("*").order("id");
   if (error) { console.error(error); return; }
   rooms = data || [];
 }
 
 async function loadUnavail() {
-  const { data, error } = await supabase.from("unavailability").select("*").order("start_date");
+  const { data, error } = await sb.from("unavailability").select("*").order("start_date");
   if (error) { console.error(error); return; }
   unavail = data || [];
 }
 
 async function loadBookings() {
-  const { data, error } = await supabase.from("bookings").select("*").order("created_at", { ascending: false });
+  const { data, error } = await sb.from("bookings").select("*").order("created_at", { ascending: false });
   if (error) { console.error(error); return; }
   bookings = data || [];
 }
@@ -320,7 +320,7 @@ async function toggleRoom(roomId) {
   
   if (blocked) {
     // Remove any unavailability covering today
-    const { error } = await supabase
+    const { error } = await sb
       .from("unavailability")
       .delete()
       .eq("room_id", roomId)
@@ -334,7 +334,7 @@ async function toggleRoom(roomId) {
     if (!start) return;
     const end = prompt("Until (YYYY-MM-DD):", start);
     if (!end) return;
-    const { error } = await supabase.from("unavailability").insert({
+    const { error } = await sb.from("unavailability").insert({
       room_id: roomId, start_date: start, end_date: end, reason: "admin"
     });
     if (error) return toast("Error: " + error.message);
@@ -346,7 +346,7 @@ async function toggleRoom(roomId) {
 }
 
 async function setBookingStatus(id, status) {
-  const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
+  const { error } = await sb.from("bookings").update({ status }).eq("id", id);
   if (error) return toast("Error: " + error.message);
   toast(`Booking #${id} ${status}.`, true);
   
@@ -354,11 +354,11 @@ async function setBookingStatus(id, status) {
   const b = bookings.find(x => x.id === id);
   if (b && b.room_id) {
     if (status === "confirmed") {
-      await supabase.from("unavailability").insert({
+      await sb.from("unavailability").insert({
         room_id: b.room_id, start_date: b.check_in, end_date: b.check_out, reason: "booked"
       });
     } else if (status === "cancelled" || status === "declined") {
-      await supabase.from("unavailability")
+      await sb.from("unavailability")
         .delete()
         .eq("room_id", b.room_id)
         .eq("start_date", b.check_in)
@@ -388,14 +388,14 @@ async function addManualBooking() {
   if (checkOut <= checkIn) return toast("Check-out must be after check-in.");
   const days = Math.round((new Date(checkOut) - new Date(checkIn)) / 864e5);
   const total = room.base_price * days;
-  const { data, error } = await supabase.from("bookings").insert({
+  const { data, error } = await sb.from("bookings").insert({
     room_id: roomId, room_code: room.code, category: room.category,
     guest_name: name, guest_phone: phone, guest_email: $("#addEmail").value.trim() || null,
     check_in: checkIn, check_out: checkOut, guests, total_amount: total, status: "confirmed"
   });
   if (error) return toast("Error: " + error.message);
   // Block room for those dates
-  await supabase.from("unavailability").insert({
+  await sb.from("unavailability").insert({
     room_id: roomId, start_date: checkIn, end_date: checkOut, reason: "booked"
   });
   toast(`Booking saved for ${name} — ${room.code} confirmed!`, true);
@@ -404,12 +404,12 @@ async function addManualBooking() {
 }
 
 // Listen for realtime changes
-supabase
+sb
   .channel("public:bookings")
   .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => refreshAll())
   .subscribe();
 
-supabase
+sb
   .channel("public:unavailability")
   .on("postgres_changes", { event: "*", schema: "public", table: "unavailability" }, () => { loadUnavail().then(() => { renderRooms(); renderStats(); }); })
   .subscribe();
