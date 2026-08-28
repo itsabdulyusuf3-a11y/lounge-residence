@@ -1,10 +1,10 @@
 # The Lounge Residence — Luxury Serviced Apartments in Kano
 
-A single-page website for **The Lounge Residence**, a five-storey private residence of seventeen bespoke serviced apartments at **No. 39 Sultan Road, Nasarawa GRA, Kano, Nigeria**.
+A single-page website for **The Lounge Residence**, a five-storey private residence of thirteen bespoke serviced apartments at **No. 39 Sultan Road, Nasarawa GRA, Kano, Nigeria**.
 
 ## Features
 
-- 🛏️ Five residence types with live pricing (Three-Bedroom, Two-Bedroom, One-Bedroom, Studio Deluxe, Studio Classic)
+- 🛏️ Five residence types with live pricing (Premium 3-Bedroom, Three-Bedroom, Two-Bedroom, One-Bedroom, Studio)
 - 🎉 The Lounge — private events space on the 4th floor
 - 📅 Interactive booking form with live quote calculator
 - 💬 WhatsApp booking integration (request → confirm → pay)

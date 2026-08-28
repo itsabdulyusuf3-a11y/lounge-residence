@@ -3,13 +3,13 @@
 -- Run this in: Supabase Dashboard → SQL Editor → New query → Run
 -- ============================================
 
--- 1. ROOMS TABLE (the 17 residences)
+-- 1. ROOMS TABLE (the 13 residences)
 CREATE TABLE IF NOT EXISTS rooms (
   id SERIAL PRIMARY KEY,
-  code TEXT UNIQUE NOT NULL,           -- e.g. '01', '02', 'S1', 'SD1'
+  code TEXT UNIQUE NOT NULL,           -- e.g. '01', '02', '07', '13'
   floor TEXT NOT NULL,                 -- 'Ground', '1st', '2nd', '3rd', '4th'
-  name TEXT NOT NULL,                  -- 'One-Bedroom Residence', 'Studio Classic'...
-  category TEXT NOT NULL,              -- 'three','two','one','studiod','studio','lounge'
+  name TEXT NOT NULL,                  -- 'Residence 01', 'Studio 13'...
+  category TEXT NOT NULL,              -- 'three','two','one','studio','lounge'
   capacity INT DEFAULT 2,
   base_price NUMERIC NOT NULL DEFAULT 0,
   is_lounge BOOLEAN DEFAULT FALSE      -- true for The Lounge (4th floor event space)
@@ -43,25 +43,22 @@ CREATE TABLE IF NOT EXISTS bookings (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- 4. SEED THE ROOMS (17 residences per your directory)
+-- 4. SEED THE ROOMS (13 residences per your directory)
+--    LR 07 is the premium 3-bedroom residence at 300,000/night.
 INSERT INTO rooms (code, floor, name, category, capacity, base_price) VALUES
-  ('01', 'Ground', 'Residence 01', 'two', 4, 200000),
-  ('02', 'Ground', 'Residence 02', 'two', 4, 200000),
-  ('03', '1st',   'Residence 03', 'one', 3, 180000),
-  ('04', '1st',   'Residence 04', 'one', 3, 180000),
-  ('05', '1st',   'Residence 05', 'one', 3, 180000),
-  ('S1', '1st',   'Studio Classic S1', 'studio', 2, 120000),
-  ('06', '2nd',   'Residence 06', 'one', 3, 180000),
-  ('07', '2nd',   'Residence 07', 'one', 3, 180000),
-  ('08', '2nd',   'Residence 08', 'one', 3, 180000),
-  ('S2', '2nd',   'Studio Classic S2', 'studio', 2, 120000),
-  ('09', '3rd',   'Residence 09', 'two', 4, 200000),
-  ('10', '3rd',   'Residence 10', 'two', 4, 200000),
+  ('01', 'Ground', 'Residence 01', 'three', 6, 250000),
+  ('02', 'Ground', 'Residence 02', 'three', 6, 250000),
+  ('03', '1st',   'Residence 03', 'three', 6, 250000),
+  ('04', '1st',   'Residence 04', 'three', 6, 250000),
+  ('05', '1st',   'Residence 05', 'two', 4, 200000),
+  ('06', '2nd',   'Residence 06', 'three', 6, 250000),
+  ('07', '2nd',   'Residence 07', 'three_premium', 6, 300000),
+  ('08', '2nd',   'Residence 08', 'two', 4, 200000),
+  ('09', '3rd',   'Residence 09', 'three', 6, 250000),
+  ('10', '3rd',   'Residence 10', 'three', 6, 250000),
   ('11', '3rd',   'Residence 11', 'two', 4, 200000),
-  ('S3', '3rd',   'Studio Classic S3', 'studio', 2, 120000),
-  ('12', '4th',   'Residence 12', 'three', 6, 250000),
-  ('SD1', '4th',  'Studio Deluxe SD1', 'studiod', 2, 150000),
-  ('SD2', '4th',  'Studio Deluxe SD2', 'studiod', 2, 150000),
+  ('12', '4th',   'Residence 12', 'one', 3, 180000),
+  ('13', '4th',   'Residence 13', 'studio', 2, 150000),
   ('LOUNGE', '4th', 'The Lounge (Event Space)', 'lounge', 50, 250000)
 ON CONFLICT (code) DO NOTHING;
 

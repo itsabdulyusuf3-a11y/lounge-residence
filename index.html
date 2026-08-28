@@ -11,7 +11,6 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='30' fill='%23171310'/><circle cx='32' cy='32' r='25' fill='none' stroke='%23c2953c' stroke-width='2'/><text x='32' y='41' font-family='Georgia' font-size='22' fill='%23c2953c' text-anchor='middle'>LR</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://js.paystack.co/v1/inline.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <style>
@@ -254,20 +253,21 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
   <div class="container">
     <span class="hausa">Sannu da Zuwa · Welcome</span>
     <h1>Quiet Luxury, Behind<br>a Single Golden Door</h1>
-    <p>Bespoke serviced apartments on Sultan Road, Nasarawa GRA — from ₦120,000 a night. Serviced daily, powered always, and crowned by our signature rooftop lounge.</p>
+      <p>Bespoke serviced apartments on Sultan Road, Nasarawa GRA — from ₦150,000 a night. Serviced daily, powered always, and crowned by our signature rooftop lounge.</p>
     <form class="bookbar" id="heroForm">
       <div><label>Check‑in</label><input type="date" id="hIn" required></div>
       <div><label>Check‑out</label><input type="date" id="hOut" required></div>
       <div><label>Guests</label><select id="hGuests"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
       <button class="btn" type="submit">Check Availability</button>
     </form>
+    <div id="heroAvail" style="margin:18px auto 0;max-width:860px;background:var(--ink);color:var(--cream);border:1px solid rgba(194,149,60,.5);padding:14px 20px;text-align:left;display:none"></div>
   </div>
   <div class="skyline sky-hero"><svg viewBox="0 0 1440 160" preserveAspectRatio="none"><use href="#sky"/></svg></div>
 </header>
 
 <div class="trust"><div class="container">
   <span><i>❖</i>24/7 Power</span><span><i>❖</i>Fibre Wi‑Fi</span><span><i>❖</i>Daily Housekeeping</span>
-  <span><i>❖</i>24/7 Security</span><span><i>❖</i>Pay Only After Confirmation</span><span><i>❖</i>Airport Transfers</span>
+  <span><i>❖</i>24/7 Security</span><span><i>❖</i>Pay On Arrival</span><span><i>❖</i>Airport Transfers</span>
 </div></div>
 <div class="trim"></div>
 
@@ -285,10 +285,10 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
       <div class="eyebrow">Welcome · Barka</div>
       <div class="orn"><span></span><i>❖</i><span></span></div>
       <h2>A Private Residence in the Heart of Kano</h2>
-      <p>The Lounge Residence is a five‑storey private residence of seventeen bespoke apartments on Sultan Road, Nasarawa GRA — one of Kano's most prestigious addresses.</p>
+      <p>The Lounge Residence is a five‑storey private residence of thirteen bespoke apartments on Sultan Road, Nasarawa GRA — one of Kano's most prestigious addresses.</p>
       <p>Every residence pairs dark walnut cabinetry and honed granite with full air‑conditioning, fitted kitchens and hotel‑grade housekeeping — dressed in our signature LR monogram linen.</p>
       <div class="stats">
-        <div><b>17</b><span>Residences</span></div>
+        <div><b>13</b><span>Residences</span></div>
         <div><b>5</b><span>Floors</span></div>
         <div><b>24/7</b><span>Concierge</span></div>
       </div>
@@ -316,6 +316,20 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
         </div>
       </div>
 
+      <div class="room inc reveal">
+        <div class="body">
+          <span class="tag" style="color:var(--sun)">LR 07 · Premium · Sleeps 6</span><h3 style="color:var(--sun)">Premium 3-Bedroom Residence</h3>
+          <ul>
+            <li>Three en-suite bedrooms — enhanced fit-out</li>
+            <li>Premium finishes & dedicated lounge</li>
+            <li>Full chef's kitchen & dining</li>
+            <li>Smart TVs · Wi-Fi · AC</li>
+          </ul>
+          <div data-price="three_premium" style="color:var(--sun);font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:14px"></div>
+          <button class="btn bookBtn" data-cat="three_premium">Book Premium Residence</button>
+        </div>
+      </div>
+
       <div class="room reveal">
         <div class="ph"><img src="assets/living.jpg" alt="Two-bedroom residence lounge and dining"><span class="rate"><span data-price="two"></span> <small>/ night</small></span></div>
         <div class="body">
@@ -335,19 +349,10 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
       </div>
 
       <div class="room reveal">
-        <div class="ph"><img src="assets/bedroom-1.jpg" alt="Studio deluxe with warm sconce lighting"><span class="rate"><span data-price="studiod"></span> <small>/ night</small></span></div>
+        <div class="ph"><img src="assets/kitchen.jpg" alt="Studio kitchenette"><span class="rate"><span data-price="studio"></span> <small>/ night</small></span></div>
         <div class="body">
-          <span class="tag">Units SD1 – SD2 · Sleeps 2</span><h3>Studio Deluxe</h3>
-          <ul><li>Premium open‑plan studio</li><li>Kitchenette & dining nook</li><li>Warm sconce ambience</li><li>Wi‑Fi · DSTV · AC</li></ul>
-          <button class="btn ghost bookBtn" data-cat="studiod">Book This Residence</button>
-        </div>
-      </div>
-
-      <div class="room reveal">
-        <div class="ph"><img src="assets/kitchen.jpg" alt="Studio classic kitchenette"><span class="rate"><span data-price="studio"></span> <small>/ night</small></span></div>
-        <div class="body">
-          <span class="tag">Units S1 – S3 · Sleeps 2</span><h3>Studio Classic</h3>
-          <ul><li>Cozy self‑contained studio</li><li>Fitted kitchenette</li><li>Work desk · Wi‑Fi · DSTV</li><li>Ideal for solo business stays</li></ul>
+          <span class="tag">Sleeps 2</span><h3>Studio</h3>
+          <ul><li>Self‑contained studio</li><li>Fitted kitchenette</li><li>Work desk · Wi‑Fi · DSTV</li><li>Ideal for solo business stays</li></ul>
           <button class="btn ghost bookBtn" data-cat="studio">Book This Residence</button>
         </div>
       </div>
@@ -427,10 +432,10 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
       <table>
         <tr><th>Floor</th><th>Residences</th><th>Facilities</th></tr>
         <tr><td><b>Ground</b></td><td>01 · 02</td><td>Reception Office · Laundry</td></tr>
-        <tr><td><b>1st</b></td><td>03 · 04 · 05 · S1</td><td>—</td></tr>
-        <tr><td><b>2nd</b></td><td>06 · 07 · 08 · S2</td><td>—</td></tr>
-        <tr><td><b>3rd</b></td><td>09 · 10 · 11 · S3</td><td>—</td></tr>
-        <tr><td><b>4th</b></td><td>12 · SD1 · SD2</td><td><b>The Lounge</b></td></tr>
+        <tr><td><b>1st</b></td><td>03 · 04 · 05</td><td>—</td></tr>
+        <tr><td><b>2nd</b></td><td>06 · 07 · 08</td><td>—</td></tr>
+        <tr><td><b>3rd</b></td><td>09 · 10 · 11</td><td>—</td></tr>
+        <tr><td><b>4th</b></td><td>12 · 13</td><td><b>The Lounge</b></td></tr>
       </table>
     </div>
   </div>
@@ -476,7 +481,7 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
     </div>
     <div class="rev-grid">
       <div class="rv reveal"><div class="stars">★★★★★</div><p>"Immaculate apartment, constant light and the most comfortable bed I've had in Kano. The rooftop lounge is a hidden gem."</p><b>Amina B.</b><span>Business traveller · Abuja</span></div>
-      <div class="rv reveal"><div class="stars">★★★★★</div><p>"Booked on WhatsApp, paid online, checked in within minutes. Feels like a five‑star hotel with the privacy of a home."</p><b>Chinedu O.</b><span>Family stay · Lagos</span></div>
+      <div class="rv reveal"><div class="stars">★★★★★</div><p>"Booked on WhatsApp, confirmed within minutes, checked in the same day. Feels like a five‑star hotel with the privacy of a home."</p><b>Chinedu O.</b><span>Family stay · Lagos</span></div>
       <div class="rv reveal"><div class="stars">★★★★★</div><p>"We hosted a private dinner in The Lounge for 20 guests — flawless setup, discreet staff, unforgettable evening."</p><b>Fatima S.</b><span>Private event · Kano</span></div>
     </div>
   </div>
@@ -502,10 +507,10 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
           <div><label>Phone / WhatsApp</label><input id="bPhone" placeholder="+234..." required></div>
           <div><label>Residence</label><select id="bCat">
             <option value="three">Three-Bedroom Residence</option>
+            <option value="three_premium">Premium 3-Bedroom (LR 07)</option>
             <option value="two">Two-Bedroom Residence</option>
             <option value="one">One-Bedroom Residence</option>
-            <option value="studiod">Studio Deluxe (SD1–SD2)</option>
-            <option value="studio">Studio Classic (S1–S3)</option>
+            <option value="studio">Studio</option>
             <option value="lounge">The Lounge (Private Event)</option>
           </select></div>
         </div>
@@ -527,7 +532,6 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
           <div><b>3</b><span>Pay & stay</span></div>
         </div>
         <button class="btn" id="waBtn" style="width:100%;margin-top:16px">Check Availability on WhatsApp</button>
-        <button class="btn ghost" id="payBtn" style="width:100%;margin-top:10px">Confirmed? Pay Securely</button>
         <div id="bookNote"></div>
         <small>You pay nothing until your residence is confirmed available. Concierge replies within minutes, 24/7. Check‑in 2:00 PM · Check‑out 11:00 AM.</small>
         <svg class="wm" viewBox="0 0 1440 160" preserveAspectRatio="none"><use href="#sky"/></svg>
@@ -542,7 +546,7 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
     <div class="sec-head"><div class="eyebrow">Good To Know</div><div class="orn"><span></span><i>❖</i><span></span></div><h2>Frequently Asked</h2></div>
     <div class="faq">
       <details open><summary>Is there constant electricity and water?</summary><p>Yes — the residence runs on full 24/7 power backup with dedicated water supply and hot water in every unit.</p></details>
-      <details><summary>How do I pay?</summary><p>Request on WhatsApp first — once we confirm your residence is available, you pay via a secure Paystack link, bank transfer, or card at the ground‑floor office. You never pay before confirmation.</p></details>
+      <details><summary>How do I pay?</summary><p>Request on WhatsApp first — once we confirm your residence is available, you pay via bank transfer or card at the ground‑floor office. You never pay before confirmation.</p></details>
       <details><summary>Do you offer airport pickup?</summary><p>Complimentary pickup from Aminu Kano International Airport on stays of 3+ nights; otherwise a concierge transfer is available at a small fee.</p></details>
       <details><summary>Can I host an event in The Lounge?</summary><p>Yes — the 4th‑floor Lounge hosts private dinners, proposals and corporate gatherings up to 50 guests from ₦250,000 per event.</p></details>
       <details><summary>Is the residence family friendly?</summary><p>Absolutely. Two and Three‑Bedroom Residences sleep up to 6, and the residence is gated with 24/7 security and CCTV.</p></details>
@@ -581,7 +585,6 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
 /* ============ CONFIGURATION ============ */
 const CONFIG = {
   whatsapp: SUPABASE_CONFIG.whatsapp,
-  paystackPublicKey: SUPABASE_CONFIG.paystackPublicKey,
   rates: SUPABASE_CONFIG.rates,
   fee: 0
 };
@@ -662,11 +665,11 @@ async function loadAvailability() {
 function roomCategoryForCode(code) {
   if (!code) return null;
   if (code === "LOUNGE") return "lounge";
-  if (code.startsWith("SD")) return "studiod";
-  if (code.startsWith("S")) return "studio";
-  if (code === "12") return "three";
-  if (["01","02","09","10","11"].includes(code)) return "two";
-  return "one";
+  if (code === "13") return "studio";
+  if (code === "12") return "one";
+  if (code === "07") return "three_premium";
+  if (["05","08","11"].includes(code)) return "two";
+  return "three";
 }
 
 // Save booking request to Supabase
@@ -715,13 +718,69 @@ $("#lightbox").onclick=()=>$("#lightbox").classList.remove("open");
 
 $$(".bookBtn").forEach(b=>b.onclick=()=>{$("#bCat").value=b.dataset.cat;quote();location.hash="#book"});
 
+// Live availability check for the hero "Check Availability" button
+async function checkAvailability(inDate, outDate) {
+  const box = $("#heroAvail");
+  box.style.display = "block";
+  box.innerHTML = "Checking availability...";
+  try {
+    const { data: roomData, error: roomErr } = await sb.from("rooms").select("id, code, category, name, base_price");
+    if (roomErr) throw roomErr;
+    const { data: unavailData, error: unavailErr } = await sb.from("unavailability").select("*");
+    if (unavailErr) throw unavailErr;
+    // Map room_id -> category
+    const catByRoom = {};
+    (roomData || []).forEach(r => {
+      if (r.category && r.code !== "LOUNGE") catByRoom[r.id] = r.category;
+    });
+    // Which categories have ANY room blocked overlapping the requested dates
+    const blockedCats = new Set();
+    (unavailData || []).forEach(u => {
+      const cat = catByRoom[u.room_id];
+      // Overlap check: unavailability range intersects the requested range
+      if (cat && u.start_date <= outDate && u.end_date >= inDate) blockedCats.add(cat);
+    });
+    const labels = CONFIG.rates;
+    // Only the residence types that are available (not blocked) for these dates
+    const order = ["three","three_premium","two","one","studio"];
+    const freeCats = order.filter(c => labels[c] && !blockedCats.has(c));
+    if (freeCats.length === 0) {
+      box.innerHTML = `<b style="color:var(--sun);letter-spacing:.1em">AVAILABILITY · ${inDate} → ${outDate}</b><br>No residences available for these dates. Please try different dates or contact us on WhatsApp.`;
+      return;
+    }
+    // Render each available room as a clickable button
+    const btnStyle = "display:block;width:100%;margin:8px 0;background:rgba(194,149,60,.12);border:1px solid rgba(194,149,60,.5);color:var(--cream);padding:12px 16px;text-align:left;cursor:pointer;font:500 .85rem 'Jost';letter-spacing:.04em;transition:.2s";
+    const gold = "color:var(--sun);";
+    const parts = freeCats.map(c => {
+      const r = labels[c];
+      return `<button class="availRoomBtn" data-cat="${c}" style="${btnStyle}"><span style="${gold};font-weight:600">${r.label}</span> — <span style="color:#fff">${fmt(r.price)}/night</span><br><small style="color:#b9ae9d">Click to book this residence</small></button>`;
+    });
+    box.innerHTML = `<b style="color:var(--sun);letter-spacing:.1em">AVAILABLE FOR ${inDate} → ${outDate}</b><br>${parts.join("")}<small style="color:#b9ae9d">Select a residence below to book it for these dates.</small>`;
+    // Wire up each available-room button: pre-select it, quote it, scroll to booking
+    box.querySelectorAll(".availRoomBtn").forEach(b => {
+      b.onclick = () => {
+        $("#bCat").value = b.dataset.cat;
+        quote();
+        // scrollIntoView reliably scrolls regardless of current hash state
+        document.getElementById("book").scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+    });
+  } catch (err) {
+    console.warn("Availability check failed:", err.message);
+    box.innerHTML = "Could not check availability right now. Scroll down and use the WhatsApp request to confirm directly.";
+  }
+}
+
 $("#heroForm").onsubmit=e=>{
   e.preventDefault();
+  if(!$("#hIn").value || !$("#hOut").value) return;
+  if($("#hOut").value <= $("#hIn").value) { $("#heroAvail").style.display="block"; $("#heroAvail").textContent="Check-out must be after check-in."; return; }
   if($("#hIn").value)$("#bIn").value=$("#hIn").value;
   if($("#hOut").value)$("#bOut").value=$("#hOut").value;
   $("#bGuests").value=$("#hGuests").value; 
   updateCheckoutMin("#bIn", "#bOut");
   quote(); 
+  checkAvailability($("#hIn").value, $("#hOut").value);
   location.hash="#book";
 };
 
@@ -755,10 +814,9 @@ function quote(){
   }
 }
 
-function validate(pay){
+function validate(){
   const {cat,n}=collect();
   if(!$("#bName").value.trim()||!$("#bPhone").value.trim()) return "Please enter your full name and phone number.";
-  if(pay && !$("#bEmail").value.includes("@")) return "A valid email address is required for your payment receipt.";
   if(!(n>0)) return "Check-out date must be strictly after check-in date.";
   return null;
 }
@@ -771,49 +829,13 @@ function waMsg(){
 }
 
 $("#waBtn").onclick=async()=>{
-  const err=validate(false);
+  const err=validate();
   if(err) return note("⚠ "+err);
   // Save to Supabase so admin sees the request
   const { error } = await saveBookingRequest();
   if (!error) console.log("Booking request saved to database");
   window.open(`https://wa.me/${CONFIG.whatsapp}?text=${waMsg()}`,"_blank");
   note("✓ Request sent! Our concierge will confirm availability on WhatsApp within minutes.");
-};
-
-$("#payBtn").onclick=()=>{
-  const err=validate(true);
-  if(err) return note("⚠ "+err);
-  
-  if(!CONFIG.paystackPublicKey){ 
-    note("ℹ Online card payment activates once Paystack Live Key is inserted. Redirecting via WhatsApp confirmation...");
-    setTimeout(() => {
-      window.open(`https://wa.me/${CONFIG.whatsapp}?text=${waMsg()}`,"_blank");
-    }, 1200);
-    return; 
-  }
-  
-  const {cat,n}=collect();
-  const total=$("#bCat").value==="lounge"?cat.price:cat.price*n+CONFIG.fee;
-  
-  const handler=PaystackPop.setup({
-    key: CONFIG.paystackPublicKey, 
-    email: $("#bEmail").value, 
-    amount: total*100, 
-    currency: "NGN",
-    ref: "TLR-" + Math.floor(Math.random() * 1000000 + 1),
-    metadata:{
-      custom_fields:[
-        {display_name:"Guest Name", variable_name:"guest", value:$("#bName").value},
-        {display_name:"Stay Details", variable_name:"stay", value:`${cat.label} (${$("#bIn").value} to ${$("#bOut").value})`}
-      ]
-    },
-    callback: r => {
-      note("✓ Payment successful! Ref: " + r.reference + ". Notifying front desk...");
-      window.open(`https://wa.me/${CONFIG.whatsapp}?text=` + encodeURIComponent(`Hello! I just completed my online payment. Reference: ${r.reference}`), "_blank");
-    },
-    onClose: () => note("Payment window closed. You can also complete your booking instantly via WhatsApp.")
-  });
-  handler.openIframe();
 };
 
 document.addEventListener("DOMContentLoaded", () => {

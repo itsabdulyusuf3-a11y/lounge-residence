@@ -82,6 +82,9 @@ td{padding:12px 16px;border-top:1px solid var(--line);white-space:nowrap}
 .addcard label{display:block;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#b9ae9d;margin-bottom:5px}
 .addcard input,.addcard select{padding:11px 12px;border:1px solid rgba(194,149,60,.4);background:rgba(255,255,255,.06);color:var(--cream);font:400 .9rem 'Jost';outline:none;width:100%}
 .addcard input:focus,.addcard select:focus{border-color:var(--gold)}
+/* Options render on white dropdown by default; give them dark text for readability */
+.addcard select option{color:#171310;background:#fff}
+.addcard select option:hover,.addcard select option:checked{background:var(--gold);color:#171310}
 .addcard .btn{margin-top:16px}
 /* NOTICE */
 .notice{position:fixed;bottom:24px;right:24px;z-index:99;background:var(--ink);color:var(--cream);border:1px solid var(--gold);padding:14px 22px;font-size:.88rem;transition:.3s;opacity:0;pointer-events:none;max-width:340px}
