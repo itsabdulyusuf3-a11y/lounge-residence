@@ -8,7 +8,7 @@ const SUPABASE_CONFIG = {
   anonKey: "sb_publishable_gA3wYlZBdvlwIs3VJN8fKg_Px7KD6y3",
   
   // WhatsApp number for booking notifications (international format, no +)
-  whatsapp: "2348000000000",
+  whatsapp: "2349028832211",
   
   // Room rates (NGN per night)
   // Note: LR 07 is the premium 3-bedroom (300,000/night); all other
