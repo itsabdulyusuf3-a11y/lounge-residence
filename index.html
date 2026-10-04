@@ -902,6 +902,9 @@ function note(m){$("#bookNote").textContent=m||""}
 
 function waMsg(){
   const {cat,n}=collect();
+  const nights = n>0 ? n : 0;
+  const isEvent = $("#bCat").value === "lounge";
+  const total = isEvent ? cat.price : cat.price * nights;
   const email=$("#bEmail").value.trim();
   const lines=[
     "Hello The Lounge Residence! I would like to reserve:",
@@ -910,10 +913,12 @@ function waMsg(){
     `🏠 Residence: ${cat.label}`,
     `📅 Check-in: ${$("#bIn").value}`,
     `📅 Check-out: ${$("#bOut").value}`,
-    `🌙 Nights: ${(n||"-")}`
+    isEvent
+      ? `🌙 Event date: ${$("#bIn").value}`
+      : `🌙 Total: ${nights} night${nights>1?"s":""} (${nights} day${nights>1?"s":""})`,
+    `👥 Guests: ${$("#bGuests").value}`,
+    `💰 Quoted Total: ${isEvent ? fmt(total) : `${fmt(cat.price)} × ${nights} night${nights>1?"s":""} = ${fmt(total)}`}`
   ];
-  lines.push(`👥 Guests: ${$("#bGuests").value}`);
-  lines.push(`💰 Quoted Total: ${$("#sumTotal").textContent}`);
   if(email) lines.push(`✉️ Email: ${email}`);
   lines.push(`📞 Phone: ${$("#bPhone").value.trim()}`);
   // Real newlines, encoded exactly once, so WhatsApp shows one line per
