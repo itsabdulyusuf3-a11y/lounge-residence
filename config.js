@@ -18,8 +18,7 @@ const SUPABASE_CONFIG = {
     three_premium:{ label: "Premium 3-Bedroom (LR 07)", price: 300000 },
     two:      { label: "Two-Bedroom Residence",     price: 200000 },
     one:      { label: "One-Bedroom Residence",     price: 180000 },
-    studio:   { label: "Studio",                    price: 150000 },
-    lounge:   { label: "The Lounge (Event Space)",  price: 250000 }
+    studio:   { label: "Studio",                    price: 150000 }
   }
 };
 

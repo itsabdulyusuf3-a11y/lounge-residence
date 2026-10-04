@@ -412,8 +412,8 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
         <p>Proposals, birthdays and corporate evenings for up to 50 guests, styled and serviced by our concierge team.</p>
       </div>
       <div style="text-align:right">
-        <div class="pr"><span data-price="lounge"></span> <small>/ EVENT</small></div>
-        <button class="btn bookBtn" data-cat="lounge" style="margin-top:14px">Book The Lounge</button>
+        <div class="pr" style="font-size:1.2rem">Price on request <small>TAILORED TO YOUR EVENT</small></div>
+        <a class="btn" id="loungeEnquire" href="#" style="margin-top:14px">Enquire on WhatsApp</a>
       </div>
     </div>
   </div>
@@ -556,7 +556,6 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
             <option value="two">Two-Bedroom Residence</option>
             <option value="one">One-Bedroom Residence</option>
             <option value="studio">Studio</option>
-            <option value="lounge">The Lounge (Private Event)</option>
           </select></div>
         </div>
         <div class="row">
@@ -593,7 +592,7 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
       <details open><summary>Is there constant electricity and water?</summary><p>Yes — the residence runs on full 24/7 power backup with dedicated water supply and hot water in every unit.</p></details>
       <details><summary>How do I pay?</summary><p>Request on WhatsApp first — once we confirm your residence is available, you pay via bank transfer or card at the ground‑floor office. You never pay before confirmation.</p></details>
       <details><summary>Do you offer airport pickup?</summary><p>Complimentary pickup from Aminu Kano International Airport on stays of 3+ nights; otherwise a concierge transfer is available at a small fee.</p></details>
-      <details><summary>Can I host an event in The Lounge?</summary><p>Yes — the 4th‑floor Lounge hosts private dinners, proposals and corporate gatherings up to 50 guests from ₦250,000 per event.</p></details>
+      <details><summary>Can I host an event in The Lounge?</summary><p>Yes — the 4th‑floor Lounge hosts private dinners, proposals and corporate gatherings for up to 50 guests. Pricing is tailored to the type and scale of your event — message us on WhatsApp for a quote.</p></details>
       <details><summary>Is the residence family friendly?</summary><p>Absolutely. Two and Three‑Bedroom Residences sleep up to 6, and the residence is gated with 24/7 security and CCTV.</p></details>
     </div>
   </div>
@@ -655,6 +654,8 @@ function syncContactLinks(){
     const pretty=wa.replace(/^(\d{3})(\d{3})(\d{3})(\d{4})$/,"+$1 $2 $3 $4");
     if(pretty!==wa) footTel.textContent=pretty;
   }
+  const loungeEnq=$("#loungeEnquire");
+  if(loungeEnq) loungeEnq.href=`https://wa.me/${wa}?text=${encodeURIComponent("Hello The Lounge Residence! I would like a quote for a private event in The Lounge.")}`;
 }
 syncContactLinks();
 
@@ -727,7 +728,6 @@ async function loadAvailability() {
 
 function roomCategoryForCode(code) {
   if (!code) return null;
-  if (code === "LOUNGE") return "lounge";
   if (code === "13") return "studio";
   if (code === "12") return "one";
   if (code === "07") return "three_premium";
@@ -746,7 +746,7 @@ async function saveBookingRequest() {
     check_in: $("#bIn").value,
     check_out: $("#bOut").value,
     guests: +$("#bGuests").value || 1,
-    total_amount: $("#bCat").value === "lounge" ? cat.price : cat.price * n,
+    total_amount: cat.price * n,
     status: "pending"
   });
   return { data, error };
@@ -874,10 +874,10 @@ function collect(){
 function quote(){
   const {cat,n}=collect();
   $("#sumCat").textContent=cat.label;
-  $("#sumRate").textContent=fmt(cat.price)+($("#bCat").value==="lounge"?" / event":" / night");
+  $("#sumRate").textContent=fmt(cat.price)+" / night";
   
   if(n>0){
-    const sub=$("#bCat").value==="lounge"?cat.price:cat.price*n;
+    const sub=cat.price*n;
     const fee=CONFIG.fee;
     $("#sumNights").textContent=n+" night"+(n>1?"s":"");
     $("#sumSub").textContent=fmt(sub); 
@@ -903,8 +903,7 @@ function note(m){$("#bookNote").textContent=m||""}
 function waMsg(){
   const {cat,n}=collect();
   const nights = n>0 ? n : 0;
-  const isEvent = $("#bCat").value === "lounge";
-  const total = isEvent ? cat.price : cat.price * nights;
+  const total = cat.price * nights;
   const email=$("#bEmail").value.trim();
   const lines=[
     "Hello The Lounge Residence! I would like to reserve:",
@@ -913,11 +912,9 @@ function waMsg(){
     `🏠 Residence: ${cat.label}`,
     `📅 Check-in: ${$("#bIn").value}`,
     `📅 Check-out: ${$("#bOut").value}`,
-    isEvent
-      ? `🌙 Event date: ${$("#bIn").value}`
-      : `🌙 Total: ${nights} night${nights>1?"s":""} (${nights} day${nights>1?"s":""})`,
+    `🌙 Total: ${nights} night${nights>1?"s":""} (${nights} day${nights>1?"s":""})`,
     `👥 Guests: ${$("#bGuests").value}`,
-    `💰 Quoted Total: ${isEvent ? fmt(total) : `${fmt(cat.price)} × ${nights} night${nights>1?"s":""} = ${fmt(total)}`}`
+    `💰 Quoted Total: ${fmt(cat.price)} × ${nights} night${nights>1?"s":""} = ${fmt(total)}`
   ];
   if(email) lines.push(`✉️ Email: ${email}`);
   lines.push(`📞 Phone: ${$("#bPhone").value.trim()}`);
