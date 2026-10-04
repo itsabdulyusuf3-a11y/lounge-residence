@@ -630,8 +630,12 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
 
 <script>
 /* ============ CONFIGURATION ============ */
+// The WhatsApp number is hard-coded here so an enquiry can NEVER be routed to
+// the wrong number — even if a stale or cached config.js is served by the host.
+// Keep this in sync with SUPABASE_CONFIG.whatsapp in config.js.
+const WA_NUMBER = "2347078646704";
 const CONFIG = {
-  whatsapp: SUPABASE_CONFIG.whatsapp,
+  whatsapp: WA_NUMBER,
   rates: SUPABASE_CONFIG.rates,
   fee: 0
 };
