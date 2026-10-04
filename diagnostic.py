@@ -111,5 +111,3 @@ if issues:
     print("NOT READY - resolve the issues above before go-live")
 else:
     print("READY TO GO LIVE - subject to warnings above and DNS/hosting")
-</write_to_file>
-<requires_approval>false</requires_approval>

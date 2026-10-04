@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
+<script src="config.js?v=2"></script>
 <style>
 :root{--ink:#171310;--ink2:#241c16;--gold:#c2953c;--gold2:#a87e2a;--sun:#e0a437;--cream:#f6f1e7;--paper:#fbf8f2;--line:#e5dccb;--muted:#6f6659}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -622,6 +622,9 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
   </div>
 </footer>
 
+<!-- NOTE: The tel/wa.me links below are fallbacks. They are overwritten on load
+     by syncContactLinks() using config.js (the single source of truth for the
+     number). Keep them in sync if you edit the number. -->
 <a class="wafloat" id="waFloat" href="https://wa.me/2347078646704" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">✆</a>
 <div id="lightbox"><img alt=""></div>
 
@@ -923,13 +926,18 @@ function waMsg(){
   return encodeURIComponent(lines.join("\n"));
 }
 
-$("#waBtn").onclick=async()=>{
+$("#waBtn").onclick=()=>{
   const err=validate();
   if(err) return note("⚠ "+err);
-  // Save to Supabase so admin sees the request
-  const { error } = await saveBookingRequest();
-  if (!error) console.log("Booking request saved to database");
+  // IMPORTANT: open WhatsApp SYNCHRONOUSLY inside the click gesture.
+  // Awaiting the Supabase save first would consume the "user activation" and
+  // some browsers (esp. iOS Safari) then block the window.open popup, so the
+  // WhatsApp message never opens. Fire the save afterwards instead.
   window.open(`https://wa.me/${CONFIG.whatsapp}?text=${waMsg()}`,"_blank");
+  // Save to Supabase so admin sees the request (fire-and-forget).
+  saveBookingRequest()
+    .then(({ error }) => { if (!error) console.log("Booking request saved to database"); })
+    .catch(e => console.warn("Could not save booking request:", e.message));
   note("✓ Request sent! Our concierge will confirm availability on WhatsApp within minutes.");
 };
 
