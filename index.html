@@ -388,7 +388,7 @@ footer li{list-style:none;margin-bottom:9px;font-size:.9rem}
       </div>
 
       <div class="room reveal">
-        <div class="ph"><img src="assets/kitchen.jpg" alt="Studio kitchenette"><span class="rate"><span data-price="studio"></span> <small>/ night</small></span></div>
+        <div class="ph"><img src="assets/kitchen.jpg" alt="1 Bedroom Exclusive Studio Apartment kitchenette"><span class="rate"><span data-price="studio"></span> <small>/ night</small></span></div>
         <div class="body">
           <span class="tag">Sleeps 2</span><h3>1 Bedroom Exclusive Studio Apartment</h3>
           <ul><li>Self‑contained studio</li><li>Fitted kitchenette</li><li>Work desk · Wi‑Fi · DSTV</li><li>Ideal for solo business stays</li></ul>
@@ -667,31 +667,17 @@ function syncContactLinks(){
 syncContactLinks();
 
 
-// Load live prices from Supabase rooms table
-async function loadPrices() {
-  try {
-    const { data, error } = await sb.from("rooms").select("category, base_price");
-    if (error) throw error;
-    const prices = {};
-    (data || []).forEach(r => {
-      if (!prices[r.category] && r.base_price) prices[r.category] = r.base_price;
-    });
-    // Update CONFIG rates with live prices
-    Object.keys(prices).forEach(cat => {
-      if (CONFIG.rates[cat]) CONFIG.rates[cat].price = prices[cat];
-    });
-    // Update all displayed prices
-    $$("[data-price]").forEach(el => {
-      const cat = el.dataset.price;
-      if (CONFIG.rates[cat]) el.textContent = fmt(CONFIG.rates[cat].price);
-    });
-  } catch (e) {
-    console.warn("Could not load live prices:", e.message);
-    // Fallback to config.js prices
-    $$("[data-price]").forEach(el => {
-      if (CONFIG.rates[el.dataset.price]) el.textContent = fmt(CONFIG.rates[el.dataset.price].price);
-    });
-  }
+// Render the published rate card from config.js.
+// config.js is the SINGLE SOURCE OF TRUTH for rates. The Supabase
+// rooms.base_price column is reference data only and is deliberately NOT used
+// here: hand-edited DB rows must never be able to override the published
+// rate card (they previously forced the studio to 120,000 instead of
+// 150,000, which also leaked into quotes and saved booking totals).
+function loadPrices() {
+  $$("[data-price]").forEach(el => {
+    const r = CONFIG.rates[el.dataset.price];
+    if (r) el.textContent = fmt(r.price);
+  });
 }
 
 // Load availability from Supabase and mark unavailable rooms
