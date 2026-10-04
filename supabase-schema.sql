@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 
 -- 4. SEED THE ROOMS (13 residences per your directory)
---    LR 07 is the premium 3-bedroom residence at 300,000/night.
+--    LR 07 is the 3 Bedroom Luxury Apartment at 300,000/night.
 INSERT INTO rooms (code, floor, name, category, capacity, base_price) VALUES
   ('01', 'Ground', 'Residence 01', 'three', 6, 250000),
   ('02', 'Ground', 'Residence 02', 'three', 6, 250000),

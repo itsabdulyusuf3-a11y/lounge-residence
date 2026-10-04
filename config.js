@@ -10,15 +10,15 @@ const SUPABASE_CONFIG = {
   // WhatsApp number for booking notifications (international format, no +)
   whatsapp: "2347078646704",
   
-  // Room rates (NGN per night)
-  // Note: LR 07 is the premium 3-bedroom (300,000/night); all other
-  // 3-bedroom residences use the category base rate of 250,000/night.
+  // Apartment rates (NGN per night)
+  // Note: LR 07 is the 3 Bedroom Luxury Apartment (300,000/night); the other
+  // 3-bedroom residences use the Executive rate of 250,000/night.
   rates: {
-    three:    { label: "Three-Bedroom Residence", price: 250000 },
-    three_premium:{ label: "Premium 3-Bedroom (LR 07)", price: 300000 },
-    two:      { label: "Two-Bedroom Residence",     price: 200000 },
-    one:      { label: "One-Bedroom Residence",     price: 180000 },
-    studio:   { label: "Studio",                    price: 150000 }
+    three:        { label: "3 Bedroom Executive Apartment",        price: 250000 },
+    three_premium:{ label: "3 Bedroom Luxury Apartment",           price: 300000 },
+    two:          { label: "2 Bedroom Business Apartment",         price: 200000 },
+    one:          { label: "1 Bedroom Luxury Apartment",           price: 180000 },
+    studio:       { label: "1 Bedroom Exclusive Studio Apartment", price: 150000 }
   }
 };
 

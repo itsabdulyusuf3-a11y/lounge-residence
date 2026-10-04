@@ -56,7 +56,7 @@ if 'paystackPublicKey: ""' in config:
 # 6. Index key sections
 sections = [
     'id="heroForm"', 'id="heroAvail"', "checkAvailability", "scrollIntoView",
-    'data-cat="three_premium"', "Premium 3-Bedroom", 'id="book"',
+    'data-cat="three_premium"', "3 Bedroom Luxury Apartment", 'id="book"',
     "loadPrices", "loadAvailability",
 ]
 for s in sections:

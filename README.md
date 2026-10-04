@@ -4,7 +4,7 @@ A single-page website for **The Lounge Residence**, a five-storey private reside
 
 ## Features
 
-- 🛏️ Five residence types with live pricing (Premium 3-Bedroom, Three-Bedroom, Two-Bedroom, One-Bedroom, Studio)
+- 🛏️ Five apartment types with live pricing (3 Bedroom Luxury, 3 Bedroom Executive, 2 Bedroom Business, 1 Bedroom Luxury, 1 Bedroom Exclusive Studio)
 - 🎉 The Lounge — private events space on the 4th floor
 - 📅 Interactive booking form with live quote calculator
 - 💬 WhatsApp booking integration (request → confirm → pay)
